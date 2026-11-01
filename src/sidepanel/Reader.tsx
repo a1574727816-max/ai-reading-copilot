@@ -185,9 +185,48 @@ export function Reader() {
       void chrome.tabs.get(info.tabId).then((t) => loadPage(t));
     };
     const updated = (id: number, change: chrome.tabs.OnUpdatedInfo) => {
-      if (id === current.current.tab?.id && change.url) void loadPage();
+      if (id !== current.current.tab?.id) return;
+      if (change.status === "loading") {
+        const previous = current.current.conversation;
+        if (previous?.messages.length && current.current.prefs.retainHistory)
+          void saveConversation(previous).catch(() => {});
+        generation.current++;
+        abort.current?.abort();
+        setBusy(false);
+        setProgress("");
+        setError("");
+        setDoc(undefined);
+        setSelection(undefined);
+        setConversation(undefined);
+        setState("reading");
+        current.current.doc = undefined;
+        current.current.state = "reading";
+        return;
+      }
+      // URL is redacted on pages without a grant, but load status is still sent.
+      // Retry after navigation so an about:blank permission error cannot stick.
+      // A manual read that already succeeded need not restart on late image loads.
+      if (
+        change.url ||
+        (change.status === "complete" && current.current.state !== "ready")
+      )
+        void loadPage();
     };
-    const message = (m: { type: string; tabId: number; url?: string }) => {
+    const message = (m: {
+      type: string;
+      tabId: number;
+      url?: string;
+      windowId?: number;
+    }) => {
+      if (m.type === "READ_REQUESTED") {
+        if (
+          hostWindow.current !== undefined &&
+          m.windowId !== hostWindow.current
+        )
+          return;
+        void chrome.tabs.get(m.tabId).then((t) => loadPage(t));
+        return;
+      }
       if (m.tabId !== current.current.tab?.id) return;
       if (m.type === "DOCUMENT_INVALIDATED") {
         if (current.current.doc && current.current.doc.url === m.url) {

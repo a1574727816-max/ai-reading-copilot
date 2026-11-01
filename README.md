@@ -4,7 +4,7 @@
 
 ## 下载
 
-- [下载 Chrome / Edge 扩展安装包](https://github.com/a1574727816-max/ai-reading-copilot/releases/latest/download/ai-reading-copilot-1.0.0-extension.zip)
+- [下载 Chrome / Edge 扩展安装包](https://github.com/a1574727816-max/ai-reading-copilot/releases/latest/download/ai-reading-copilot-1.0.1-extension.zip)
 - [查看 Release、源码包和 SHA-256 校验文件](https://github.com/a1574727816-max/ai-reading-copilot/releases/latest)
 
 日常使用请选择名称以 `extension.zip` 结尾的附件，解压后加载到浏览器。GitHub 自动提供的 “Source code” 是源码，需要自行构建。安装包不含任何个人密钥，每位使用者在设置中填写自己的 API Key。
@@ -13,7 +13,7 @@
 
 已有发布包时无需安装 Node.js：
 
-1. 解压 `release/ai-reading-copilot-1.0.0-extension.zip` 到一个固定文件夹，不要直接打开 ZIP。
+1. 解压 `release/ai-reading-copilot-1.0.1-extension.zip` 到一个固定文件夹，不要直接打开 ZIP。
 2. Chrome 打开 `chrome://extensions`；Edge 打开 `edge://extensions`。
 3. 开启“开发者模式”，选择“加载已解压的扩展程序”，选中包含 `manifest.json` 的解压目录。源码构建后可直接选择本项目的 `dist` 目录。
 4. 把阅读助手固定到工具栏，打开扩展“选项”配置模型。
@@ -21,6 +21,8 @@
 6. 选中文字可使用小型解释卡片；在侧边栏输入问题可连续追问，点击“原文”引用定位网页。首次调用会显示发送提示。
 
 更新扩展：用新文件替换原解压目录，回到扩展管理页点击“重新加载”，再刷新文档网页。保留原目录可保留扩展身份与本地设置。不要把密钥文件放进扩展目录或分享包。
+
+v1.0.1 修复了“工具栏打开侧边栏后误报页面受限，但右键能正常使用”的权限入口问题。v1.0.0 用户请下载新安装包，覆盖原目录后重新加载扩展，无需卸载。
 
 ## DeepSeek 与兼容服务配置
 
@@ -71,6 +73,8 @@ npm run package
 ```sh
 npx playwright install chromium
 ```
+
+Linux 上可用 `xvfb-run -a npm run test:e2e` 同时运行真实工具栏权限回归测试。该测试需要 Xvfb、Python 3、libX11 与 libXtst，通过原生工具栏动作快捷键验证完全未授权的网页；普通无显示环境下会明确跳过该项，其他测试正常运行。
 
 `npm run dev` 监听并更新 `dist`，改动后需要在浏览器中重新加载扩展并刷新网页。开发构建同样不使用远程脚本或 HMR 注入。
 

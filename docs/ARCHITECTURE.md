@@ -34,6 +34,10 @@
 
 安装只声明 activeTab、scripting、sidePanel、storage、contextMenus。HTTP/HTTPS 网站访问是 optional host permission；仅按用户点击授予对应域名。模型服务授权与网页持续授权分别维护，模型接口域名不会自动注册为阅读站点。
 
+工具栏使用 `action.onClicked` 正常动作，在获得 `activeTab` 后通过 `sidePanel.open` 显式打开侧边栏；不启用 `openPanelOnActionClick` 的自动切换模式。工具栏或快捷键随后发送重读通知，保证已经打开的侧边栏也会使用新权限。`tabs.Tab.url` 缺失表示元数据尚未获准访问，不据此断定网页属于受限协议。
+
+URL 元数据缺失时，以浏览器权限约束下的轻量脚本读取尝试确认权限状态；已知受限协议由浏览器拒绝原因识别，不扩大全局标签页权限。标签页导航同时监听加载状态，加载开始停用旧上下文，完成后重试尚未成功的读取，避免依赖被隐藏的 URL 更新事件。
+
 `chrome.storage.local` 与 `chrome.storage.session` 都设为 `TRUSTED_CONTEXTS`。密钥可选本地/浏览器会话模式，网页脚本与 content script 不可读取。文档/历史在 IndexedDB。没有遥测、账号、同步和强制后端。
 
 ## 后续扩展点

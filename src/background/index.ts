@@ -32,7 +32,36 @@ async function inject(tabId: number) {
 async function checkedTab(tabId: number) {
   const tab = await chrome.tabs.get(tabId);
   const { preferences } = await loadSettings();
-  if (!tab.url || !readableUrl(tab.url))
+  // Chrome omits URL metadata before activeTab or a host grant. That does not
+  // imply the page is an internal or otherwise unsupported browser page.
+  if (!tab.url) {
+    try {
+      // Use the same browser-enforced scripting permission as normal reading.
+      // This can recover metadata after a grant without requesting global tabs.
+      const [frame] = await chrome.scripting.executeScript({
+        target: { tabId },
+        func: () => location.href,
+      });
+      if (typeof frame?.result === "string") tab.url = frame.result;
+    } catch (error) {
+      // Restricted protocols are distinguishable even when their URL metadata
+      // is redacted; ordinary missing host permissions must remain a grant error.
+      if (
+        /cannot access (?:a )?(?:chrome|edge|devtools|chrome-extension):\/\/|extensions gallery cannot be scripted/i.test(
+          errorText(error),
+        )
+      ) {
+        throw new Error(
+          "此页面受浏览器限制，或不属于受支持的 HTTP/HTTPS 网页。",
+        );
+      }
+    }
+  }
+  if (!tab.url)
+    throw new Error(
+      "尚未获得当前网页的读取权限。请点击工具栏中的阅读助手图标，或使用网页右键入口授权当前页。",
+    );
+  if (!readableUrl(tab.url))
     throw new Error("此页面受浏览器限制，或不属于受支持的 HTTP/HTTPS 网页。");
   if (isBlocked(tab.url, preferences.blockedDomains))
     throw new Error("此域名已在设置中禁用。");
@@ -83,12 +112,15 @@ chrome.runtime.onInstalled.addListener(() => {
       contexts: ["selection"],
       documentUrlPatterns: ["https://*/*", "http://*/*"],
     });
-    await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+    await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
     await registerSites();
   });
 });
 chrome.runtime.onStartup.addListener(() => {
-  void ready.then(registerSites);
+  void ready.then(async () => {
+    await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+    await registerSites();
+  });
 });
 chrome.permissions.onRemoved.addListener(() => {
   void registerSites();
@@ -127,14 +159,26 @@ chrome.storage.onChanged.addListener((changes, area) => {
     });
   }
 });
-chrome.action.onClicked.addListener((tab) => {
-  if (tab.id && tab.url && readableUrl(tab.url))
-    void inject(tab.id).catch(() => {});
-});
+function openReaderForTab(tab: chrome.tabs.Tab) {
+  if (tab.id === undefined) return;
+  const tabId = tab.id;
+  // Native auto-toggle bypasses action.onClicked and activeTab granting.
+  // Open explicitly in this click/command's user gesture, before any await.
+  void chrome.sidePanel
+    .open({ tabId })
+    .then(() => {
+      // A panel may already be open with a permission error. Opening it again
+      // does not remount React or activate a new tab, so request a fresh read.
+      void chrome.runtime
+        .sendMessage({ type: "READ_REQUESTED", tabId, windowId: tab.windowId })
+        .catch(() => {});
+    })
+    .catch(() => {});
+}
+chrome.action.onClicked.addListener(openReaderForTab);
 chrome.commands.onCommand.addListener((command, tab) => {
   if (command === "open-reader" && tab?.id) {
-    void chrome.sidePanel.open({ tabId: tab.id });
-    void inject(tab.id).catch(() => {});
+    openReaderForTab(tab);
   }
 });
 chrome.contextMenus.onClicked.addListener((info, tab) => {
