@@ -1,5 +1,14 @@
 export type ContextMode = "auto" | "selection" | "document" | "general";
 export type ActionKind = "explain" | "simple" | "example" | "why" | "deep";
+export interface PublicReaderSettings {
+  overlay: boolean;
+  theme: Preferences["theme"];
+}
+export interface QuickExplainStatus {
+  configured: boolean;
+  consent: boolean;
+  serviceOrigin: string;
+}
 export interface SourceLocator {
   headingId?: string;
   cssSelector?: string;

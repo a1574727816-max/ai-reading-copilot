@@ -720,7 +720,7 @@ export function Reader() {
           <div className="permission-box">
             <ShieldCheck size={23} />
             <p>
-              点击工具栏图标可临时读取当前页。授予当前网站权限后，后续访问可自动显示划词工具。
+              在网页空白处右键或点击工具栏图标，可打开当前页阅读助手。开启后选中文字即可显示小浮窗。
             </p>
             <button
               className="button secondary"

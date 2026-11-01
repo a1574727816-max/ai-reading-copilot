@@ -148,6 +148,20 @@ test.beforeAll(async () => {
   await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
   await expect(panel.getByText(/正文文字已读取/)).toBeVisible();
 });
+async function enableCard() {
+  await worker.evaluate(async (url) => {
+    const tab = (await chrome.tabs.query({})).find((t) => t.url === url)!;
+    const ping = await chrome.tabs.sendMessage(tab.id!, { type: "PING" });
+    const state = { url, pageId: ping.data.pageId };
+    await chrome.storage.session.set({ ["reader-" + tab.id]: state });
+    await chrome.tabs.sendMessage(tab.id!, {
+      type: "READER_STATE",
+      enabled: true,
+      ...state,
+    });
+  }, origin + "/guide");
+}
+
 test.afterAll(async () => {
   await context?.close();
   if (server) await new Promise<void>((r) => server.close(() => r()));
@@ -181,6 +195,9 @@ test("连续追问包含有限历史，停止生成可恢复交互", async () =>
 });
 test("划词解释卡片在原网页显示，不要求打开侧边栏", async () => {
   await page.bringToFront();
+  // This suite focuses on the card; permissions.spec exercises actual native
+  // menu/toolbar activation without any pregranted webpage host permission.
+  await enableCard();
   await page.addStyleTag({
     content: "button { font-size: 90px !important; color: red !important; }",
   });
@@ -357,6 +374,7 @@ test("受限页面明确报错，同 URL 正文更新停用旧上下文后可重
 test("划词入口能打开浏览器原生侧边栏", async () => {
   await panel.close();
   await page.bringToFront();
+  await enableCard();
   await page.evaluate(() => {
     const range = document.createRange();
     range.selectNodeContents(document.getElementById("term")!);

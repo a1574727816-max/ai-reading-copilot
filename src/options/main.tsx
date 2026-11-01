@@ -456,7 +456,11 @@ function Options() {
               <small>不包含系统提示与有限历史；字符数不等同于 token 数。</small>
             </label>
           </div>
-          {toggle("划词浮层", "仅在你主动启用或已授权的网站显示。", "overlay")}
+          {toggle(
+            "划词浮层",
+            "在网页空白处右键打开阅读助手后，选中文字即可显示。",
+            "overlay",
+          )}
           {toggle("流式输出", "边生成边阅读，可随时停止。", "stream")}
           {toggle(
             "保存对话历史",

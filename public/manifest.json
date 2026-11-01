@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI Reading Copilot · 阅读助手",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "结合当前文档解释术语、连续问答，并通过真实原文引用验证回答。自带密钥，本地优先。",
   "minimum_chrome_version": "116",
   "permissions": [
@@ -17,7 +17,7 @@
     "type": "module"
   },
   "action": {
-    "default_title": "打开 AI 阅读助手",
+    "default_title": "打开/关闭阅读助手",
     "default_icon": {
       "16": "icons/16.png",
       "32": "icons/32.png"
@@ -38,7 +38,7 @@
       "suggested_key": {
         "default": "Alt+Shift+R"
       },
-      "description": "打开 AI 阅读助手"
+      "description": "打开/关闭当前页阅读助手"
     }
   },
   "content_security_policy": {
