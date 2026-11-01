@@ -1,0 +1,54 @@
+{
+  "testedAt": "2026-11-01T10:37:32.307Z",
+  "browser": "156.0.8078.4",
+  "results": [
+    {
+      "url": "https://support.unitree.com/home/zh/developer/about_Go2",
+      "ok": false,
+      "error": "网站返回了访问限制或验证页面，尚未读取目标文档。请在浏览器中完成验证后重新读取。"
+    },
+    {
+      "url": "https://wiki.lckfb.com/zh-hans/lushan-pi-k230/",
+      "ok": true,
+      "title": "立创·庐山派系列开发板【介绍】 | 立创开发板技术文档中心",
+      "sections": 1,
+      "characters": 30,
+      "coverage": "partial",
+      "types": [
+        "text"
+      ],
+      "sampleCitationLocated": true,
+      "warnings": [
+        "图片中的文字、图表与公式未进行视觉识别。"
+      ]
+    },
+    {
+      "url": "https://api-docs.deepseek.com/zh-cn/",
+      "ok": true,
+      "title": "首次调用 API | DeepSeek API Docs",
+      "sections": 13,
+      "characters": 1544,
+      "coverage": "complete",
+      "types": [
+        "text",
+        "table",
+        "code"
+      ],
+      "sampleCitationLocated": true,
+      "warnings": []
+    },
+    {
+      "url": "https://lucky666.cn/docs/intro",
+      "ok": true,
+      "title": "Lucky开发分享",
+      "sections": 43,
+      "characters": 1636,
+      "coverage": "complete",
+      "types": [
+        "text"
+      ],
+      "sampleCitationLocated": true,
+      "warnings": []
+    }
+  ]
+}

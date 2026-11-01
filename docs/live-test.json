@@ -1,0 +1,15 @@
+{
+  "testedAt": "2026-11-01T10:20:40.996Z",
+  "provider": "configured local endpoint",
+  "modelsDiscovered": [
+    "deepseek-flash",
+    "deepseek-v4-pro"
+  ],
+  "model": "deepseek-flash",
+  "nonStreamingPassed": true,
+  "streamingPassed": true,
+  "usage": {
+    "input": 35,
+    "output": 22
+  }
+}

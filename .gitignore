@@ -1,0 +1,12 @@
+node_modules/
+dist/
+release/
+coverage/
+test-results/
+playwright-report/
+.env*
+!.env.example
+*apikey*
+*api-key*
+*.local.*
+.DS_Store

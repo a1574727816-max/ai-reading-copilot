@@ -1,0 +1,11 @@
+{
+  "testedAt": "2026-11-01T10:39:46.336Z",
+  "model": "deepseek-flash",
+  "browser": "156.0.8078.4",
+  "document": "https://api-docs.deepseek.com/zh-cn/",
+  "answerCharacters": 826,
+  "verifiedCitations": 5,
+  "citationLocationPassed": true,
+  "localKeyLeakInAnswer": false,
+  "passed": true
+}
